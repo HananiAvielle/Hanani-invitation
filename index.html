@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby's Christening Invitation</title>
+
+<style>:root{
+  --blush:#f3d7d8;
+  --rose:#b96070;
+  --deep-rose:#874957;
+  --ivory:#fff4e8;
+  --parchment:#f8eadb;
+  --champagne:#c49a5a;
+  --gold:#a97739;
+  --ink:#684b3f;
+  --muted:#866b5d;
+  /* Opening-cover controls: adjust these to reposition the castle and copy independently. */
+  --cover-scene-width:min(100vw,56.25svh,1080px);
+  --cover-scene-height:min(100svh,1920px);
+  --cover-castle-position:50% 48%;
+  --cover-castle-scale:1;
+  --cover-castle-zoom:2;
+  --cover-gate-zoom:3;
+  --cover-gate-left-scale-x:.45;
+  --cover-gate-right-scale-x:.45;
+  --cover-gate-left-offset:0%;
+  --cover-gate-right-offset:0%;
+  --cover-gate-top:0%;
+  --cover-gate-height:100%;
+  --cover-copy-top:67%;
+  --cover-copy-width:min(620px,62%);
+  --cover-copy-shift-y:-50%;
+  --cover-copy-backdrop:rgba(39,29,40,.24);
+  --cover-title-size:clamp(34px,5vw,58px);
+  --cover-title-offset-y:0px;
+  --cover-button-gap:clamp(16px,3svh,25px);
+  --cover-button-offset-y:0px;
+  --castle-art:url("gallery-palace-bg.png");
+  --castle-base:url("2nd pg bg.png");
+  --poster-width:min(100vw,56.25svh,1080px);
+}
+*{box-sizing:border-box}
+html{margin:0;min-height:100%;scroll-behavior:smooth}
+body{margin:0;min-height:100%;overflow-x:hidden;background:#f2dedd;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:inherit}
+.hidden{display:none!important}
+.scene{position:relative;isolation:isolate;display:grid;place-items:center;width:100%;min-height:100vh;min-height:100svh;padding:0;overflow:hidden}
+.scene:before{content:"";position:absolute;inset:-28px;z-index:0;background:var(--castle-art) center/cover no-repeat;filter:blur(18px) saturate(.72) brightness(.72);transform:scale(1.05)}
+.scene:after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(110deg,rgba(114,62,60,.2),rgba(255,234,218,.08) 50%,rgba(114,62,60,.2));pointer-events:none}
+.screen{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh;min-height:100svh;padding:0;overflow:hidden}
+.screen:after{content:"";position:absolute;inset:clamp(10px,2.4vw,34px);z-index:3;border:1px solid rgba(240,213,157,.72);outline:1px solid rgba(116,70,44,.22);outline-offset:4px;pointer-events:none}
+.cover{background:#282832;text-align:center;color:var(--ivory)}
+.cover.scene-crossfade-out{opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.details.scene-crossfade-in{position:fixed;inset:0;z-index:20;overflow-y:auto;opacity:0;transition:opacity 1.2s ease}
+.details.scene-crossfade-in.scene-crossfade-visible{opacity:1}
+.cover:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(24,24,39,.12) 0%,rgba(31,26,39,.03) 35%,rgba(27,23,34,.08) 58%,rgba(23,21,31,.48) 100%);filter:none;transform:none;pointer-events:none}
+.cover-scene{position:relative;z-index:1;isolation:isolate;flex:none;width:var(--cover-scene-width);height:var(--cover-scene-height);overflow:hidden;background:#403844}
+.cover-castle-art{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:var(--cover-castle-position);transform:scale(var(--cover-castle-scale));transform-origin:center;transition:transform 1s cubic-bezier(.42,0,.58,1);pointer-events:none;user-select:none}
+.cover-scene.castle-zooming .cover-castle-art{transform:scale(var(--cover-castle-zoom))}
+.cover-gate-stage{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none;opacity:0;transform:scale(1);transform-origin:center;transition:opacity .2s ease,transform 1s cubic-bezier(.42,0,.58,1)}
+.cover-scene.gates-opening .cover-gate-stage{opacity:1}
+.cover-scene.castle-zooming .cover-gate-stage{transform:scale(var(--cover-gate-zoom))}
+.zoom-glitter{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}
+.zoom-glitter i{position:absolute;color:#fff4cf;font:normal clamp(8px,2vw,13px)/1 Georgia,serif;opacity:0;text-shadow:0 0 8px rgba(255,236,177,.95),0 0 18px rgba(255,220,147,.55)}
+.cover-scene.castle-zooming .zoom-glitter i{animation:glitter-drift .85s ease-out var(--glitter-delay,0s) both}
+.zoom-glitter i:nth-child(1){left:16%;top:27%;--glitter-delay:0s}
+.zoom-glitter i:nth-child(2){left:34%;top:45%;--glitter-delay:.12s}
+.zoom-glitter i:nth-child(3){right:18%;top:31%;--glitter-delay:.2s}
+.zoom-glitter i:nth-child(4){right:30%;top:58%;--glitter-delay:.28s}
+.zoom-glitter i:nth-child(5){left:24%;top:69%;--glitter-delay:.36s}
+.zoom-glitter i:nth-child(6){right:20%;top:76%;--glitter-delay:.44s}
+.zoom-glitter i:nth-child(7){left:48%;top:22%;--glitter-delay:.5s}
+.zoom-glitter i:nth-child(8){left:68%;top:42%;--glitter-delay:.32s}
+@keyframes glitter-drift{0%{opacity:0;transform:translateY(9px) scale(.45)}22%{opacity:.9}100%{opacity:0;transform:translateY(-28px) scale(1.15)}}
+.castle-gate-left,.castle-gate-right{display:block;position:absolute;top:var(--cover-gate-top);height:var(--cover-gate-height);width:100%;max-width:none;object-fit:fill;filter:drop-shadow(0 5px 12px rgba(20,15,22,.3));pointer-events:none;user-select:none;visibility:visible;opacity:1;transition:transform .85s cubic-bezier(.22,.75,.25,1)}
+.castle-gate-left{left:var(--cover-gate-left-offset);transform:scaleX(1);transform-origin:left center}
+.castle-gate-right{left:auto;right:var(--cover-gate-right-offset);transform:scaleX(1);transform-origin:right center;z-index:1}
+.closed-gate-overlay{position:absolute;inset:0;z-index:3;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;opacity:1;transition:opacity .75s ease}
+.cover-scene.gates-opening .closed-gate-overlay{opacity:0}
+.cover-scene.gates-opening .castle-gate-left{transform:scaleX(var(--cover-gate-left-scale-x))}
+.cover-scene.gates-opening .castle-gate-right{transform:scaleX(var(--cover-gate-right-scale-x))}
+.sparkle{position:absolute;z-index:2;color:#fff3d7;font-size:clamp(16px,4vw,25px);text-shadow:0 1px 12px rgba(255,255,255,.9)}
+.s1{left:12%;top:20%}.s2{right:12%;top:35%}.s3{left:20%;bottom:18%}.s4{right:22%;bottom:24%}
+.envelope-wrap{position:absolute;z-index:4;top:var(--cover-copy-top);left:50%;transform:translate(-50%,var(--cover-copy-shift-y));width:var(--cover-copy-width);padding:clamp(16px,3.5vw,28px) clamp(12px,2.2vw,24px);border:1px solid rgba(241,211,153,.48);border-radius:4px;background:linear-gradient(90deg,transparent, var(--cover-copy-backdrop) 15%,rgba(39,29,40,.34) 50%,var(--cover-copy-backdrop) 85%,transparent);box-shadow:0 10px 38px rgba(17,16,25,.12);transition:opacity .35s ease}
+.cover-scene.gates-opening .envelope-wrap{opacity:0}
+.envelope-wrap:before{content:"✦  ♔  ✦";position:absolute;top:-.92em;left:50%;transform:translateX(-50%);color:#f7dfac;font:clamp(19px,5vw,29px)/1 Georgia,serif;text-shadow:0 2px 9px rgba(38,27,28,.65);white-space:nowrap}
+.envelope{position:relative;display:none;align-items:center;justify-content:center;height:clamp(178px,29svh,270px);overflow:hidden;border:1px solid #d6b36f;border-radius:7px;background:linear-gradient(145deg,rgba(255,249,238,.97),rgba(248,226,219,.96));box-shadow:0 12px 36px rgba(71,42,27,.27),inset 0 0 0 5px rgba(202,160,91,.15)}
+.envelope:before{content:"";position:absolute;inset:0;z-index:1;clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%);background:linear-gradient(145deg,rgba(244,212,218,.92),rgba(255,239,228,.72));border-top:1px solid rgba(185,137,75,.55)}
+.seal{position:relative;z-index:3;display:grid;place-items:center;width:clamp(60px,18vw,82px);aspect-ratio:1;border:2px solid #d4ad67;border-radius:50%;background:radial-gradient(circle at 35% 30%,#eaa9ad,#b85f70 72%);color:#fff3dd;font-size:32px;box-shadow:0 4px 15px rgba(100,49,44,.32)}
+.cover-title{margin:0;color:#fff6e7;text-shadow:0 2px 4px rgba(25,20,27,.75),0 0 22px rgba(255,239,213,.35);transform:translateY(var(--cover-title-offset-y))}
+.cover-title h1{margin:0 0 7px;font-family:"Great Vibes",Georgia,serif;font-size:var(--cover-title-size);font-weight:400;line-height:1.08;letter-spacing:.025em;color:#fff8eb;text-shadow:0 3px 8px rgba(24,15,21,.95),0 0 22px rgba(28,18,23,.65)}
+.cover-title p{margin:5px;font:14px/1.55 Arial,sans-serif}
+.open-btn,.submit{min-height:48px;border:1px solid #e3c27e;border-radius:999px;background:linear-gradient(140deg,#c67a7f,#9e5361);color:#fff8eb;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(72,37,39,.25)}
+.open-btn{margin-top:var(--cover-button-gap);padding:13px 30px;border-color:#f0d59a;background:linear-gradient(145deg,#f4e1b7,#c49a5a);color:#4c3330;font-size:15px;letter-spacing:.045em;box-shadow:0 5px 20px rgba(24,17,23,.35),inset 0 1px rgba(255,255,255,.75);transform:translateY(var(--cover-button-offset-y))}
+.cover-instruction{margin:9px 0 0;color:#fff5e7;font:clamp(11px,2.7vw,13px)/1.3 Georgia,"Times New Roman",serif;letter-spacing:.04em;text-shadow:0 2px 5px rgba(24,15,21,.9)}
+.open-btn:hover,.submit:hover{background:linear-gradient(140deg,#d18b8b,#a85b68)}
+.open-btn:focus-visible,.submit:focus-visible,.room-action:focus-visible{outline:3px solid #f2d69e;outline-offset:3px}
+
+/* First castle scene */
+.details{display:block;width:100%;padding:0;background:#f3e3dd}
+.castle-screen{background:#8c6458}
+.castle-screen:before{background:var(--castle-base) center/cover no-repeat;filter:blur(18px) saturate(.78) brightness(.64)}
+.castle-screen:after{background:linear-gradient(110deg,rgba(114,62,60,.2),rgba(255,234,218,.08) 50%,rgba(114,62,60,.2))}
+.castle-scene{position:relative;z-index:1;isolation:isolate;flex:none;width:var(--poster-width);aspect-ratio:9/16;max-height:min(100svh,1920px);overflow:hidden;background:#f7e5d6;box-shadow:0 12px 42px rgba(42,25,21,.32)}
+.castle-background{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:fill;object-position:center;pointer-events:none}
+.castle-panel-art{position:absolute;z-index:1;left:50%;top:50%;width:85%;height:65%;transform:translate(-50%,-50%);object-fit:fill;object-position:center;pointer-events:none;user-select:none}
+.invitation-content{position:absolute;inset:0;z-index:2}
+.castle-curtain{position:absolute;top:0;z-index:3;width:50%;height:auto;pointer-events:none}
+.left-curtain{left:-2%;transform:translateX(-110%)}
+.right-curtain{right:-2%;transform:translateX(110%) scaleX(-1)}
+.corner-flowers{position:absolute;top:4%;z-index:4;width:22%;height:auto;pointer-events:none}
+.left-corner-flowers{left:0;transform:translateX(-14px)}
+.right-corner-flowers{right:0;transform:translateX(14px) scaleX(-1)}
+.invite-copy{position:absolute;z-index:2;left:10%;right:10%;top:29%;text-align:center;color:#806c5e}
+.invite-message{max-width:100%;margin:0 auto;font:clamp(11px,1.5svh,15px)/1.25 Georgia,"Times New Roman",serif;text-wrap:balance}
+.invite-name {
+  margin: clamp(6px, 1.2svh, 12px) 0 0;
+  color: #bd6e7c;
+  font-family: "Alex Brush", "Great Vibes", "Segoe Script", "Brush Script MT", cursive;
+  font-size: clamp(30px, min(6svh, 12vw), 68px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(255,255,255,.8);
+  opacity: 0;
+  animation: hananiNameReveal 2s ease-out 1 forwards;
+}
+
+@keyframes hananiNameReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(.96);
+    text-shadow: 0 0 0 rgba(255, 220, 170, 0);
+  }
+  65% {
+    opacity: 1;
+    text-shadow: 0 0 14px rgba(255, 225, 190, .8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    text-shadow: 0 1px 2px rgba(255,255,255,.9);
+  }
+}
+
+.invite-photo-frame{position:absolute;z-index:2;left:50%;top:56%;width:65%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.invite-photo-frame-art{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none}
+.invite-portrait {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 48%;
+  width: 57%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff0e7;
+  box-shadow: 0 3px 12px rgba(105, 65, 38, .2);
+  animation: photoFadeInUp 1s ease-out 0.3s both;
+}
+
+.invite-photo-frame-art {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  animation: frameFadeInUp 1s ease-out 0.3s both;
+}
+
+@keyframes photoFadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 35px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+
+@keyframes frameFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.invite-blessing{position:absolute;z-index:2;left:10%;right:10%;top:73%;margin:0;color:#806c5e;text-align:center;font:700 clamp(13px,1.9svh,18px)/1.2 Georgia,"Times New Roman",serif}
+.invite-photo-placeholder{position:absolute;z-index:2;left:50%;top:66.5%;width:31.5%;aspect-ratio:1;transform:translate(-50%,-50%);display:none;place-items:center;padding:10px;border:3px solid #dfc078;border-radius:50%;background:rgba(255,243,230,.94);color:#896c59;text-align:center;font:clamp(10px,2.8vw,14px)/1.35 Arial,sans-serif}
+.intro-scroll-hint{position:absolute;z-index:5;left:10%;right:10%;bottom:clamp(10px,2svh,22px);text-align:center;white-space:nowrap;color:#fff7e8;font:700 10px/1.3 Arial,sans-serif;letter-spacing:.16em;text-shadow:0 2px 8px #533344;pointer-events:none}
+
+/* Shared palace stages for the gallery, event rooms, and RSVP */
+.room-section{--scene-wash:rgba(255,239,225,.03)}
+#countdown-section{--scene-wash:rgba(244,204,216,.08)}
+#ceremony{--scene-wash:rgba(255,230,195,.08);overflow:visible}
+#reception{--scene-wash:rgba(247,207,205,.08)}
+#attire{--scene-wash:rgba(255,239,222,.1)}
+#gifts{--scene-wash:rgba(235,190,196,.08);overflow:visible}
+#safety{--scene-wash:rgba(255,238,223,.1)}
+#rsvp{--scene-wash:rgba(206,157,165,.12);overflow:visible}
+.scene-stage{position:relative;z-index:1;isolation:isolate;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;width:var(--poster-width);aspect-ratio:9/16;max-height:min(100svh,1920px);margin:0;overflow:hidden;padding:clamp(76px,10svh,160px) clamp(28px,8vw,100px) clamp(92px,12svh,190px);border:0;border-radius:0;text-align:center;background-color:#f8eadb;background-image:linear-gradient(var(--scene-wash,rgba(255,239,225,.04)),var(--scene-wash,rgba(255,239,225,.04))),var(--castle-art);background-position:center;background-size:100% 100%;box-shadow:0 12px 42px rgba(42,25,21,.32)}
+.room-card,.rsvp-panel,.gallery-showcase{min-height:0}
+.room-card h3,.rsvp-panel h3,.gallery-heading h3{margin:0;color:var(--deep-rose);font:500 clamp(30px,7.5vw,54px)/1.12 Georgia,"Times New Roman",serif;letter-spacing:.01em;text-wrap:balance;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.room-card h3:before{content:none}
+.room-icon{display:grid;place-items:center;width:clamp(54px,14vw,70px);aspect-ratio:1;margin:0 auto clamp(12px,2.2svh,22px);border:1px solid rgba(169,119,57,.72);border-radius:50%;background:rgba(255,244,232,.68);color:var(--gold);font-size:clamp(27px,7vw,38px);line-height:1}
+.room-card .lead,.rsvp-panel p{max-width:30em;margin:12px auto 18px;color:var(--muted);font:clamp(14px,3.8vw,18px)/1.55 Georgia,"Times New Roman",serif}
+.room-divider{position:relative;width:min(72%,330px);height:16px;margin:clamp(14px,3svh,28px) auto;border-top:1px solid var(--champagne)}
+.room-divider:after{content:"";position:absolute;left:50%;top:-5px;transform:translateX(-50%) rotate(45deg);width:9px;height:9px;border:1px solid var(--gold);background:var(--parchment)}
+.room-info{max-width:31em;color:var(--ink);font:clamp(14px,3.8vw,17px)/1.72 Arial,sans-serif;text-wrap:pretty}
+.ceremony-reception-card{width:var(--poster-width);height:auto;min-height:100svh;max-height:none;aspect-ratio:auto;gap:0;justify-content:flex-start;overflow:visible;padding-top:clamp(161px,calc(2.5svh + 145px),171px);padding-bottom:clamp(22px,3svh,34px);background-size:cover}
+.ceremony-reception-card h3{font-family:Georgia,"Times New Roman",serif;font-size:clamp(20px,4.5vw,32px)}
+.ceremony-reception-card h3:before{margin-bottom:clamp(3px,.7svh,6px);font-size:clamp(20px,4.4vw,29px)}
+.ceremony-reception-card .room-info{font-family:"Times New Roman",Georgia,serif;line-height:1.38}
+.ceremony-reception-card .room-divider{height:8px;margin:clamp(4px,.8svh,8px) auto}
+.gift-safety-card{width:var(--poster-width);height:auto;min-height:100svh;max-height:none;aspect-ratio:auto;gap:0;justify-content:flex-start;overflow:visible;padding-top:clamp(143px,calc(3svh + 125px),155px);padding-bottom:clamp(42px,6svh,60px);background-size:cover}
+.gift-safety-card h3{font-size:clamp(21px,4.8vw,34px)}
+.gift-guide-icon{display:block;width:clamp(38px,10vw,48px);height:clamp(38px,10vw,48px);margin:0 auto clamp(4px,.8svh,8px);color:var(--gold)}
+.gift-safety-card .room-icon{width:clamp(42px,11vw,54px);margin-bottom:clamp(4px,.8svh,8px);font-size:clamp(22px,5.5vw,30px)}
+.gift-safety-card .room-info{font-family:"Times New Roman",Georgia,serif;font-size:clamp(13px,3.4vw,16px);line-height:1.45}
+.gift-safety-card .room-divider{height:8px;margin:clamp(4px,.8svh,8px) auto}
+.gift-safety-card .scroll-hint{position:relative;left:auto;right:auto;bottom:auto;width:100%;margin:clamp(14px,2.5svh,22px) 0 0}
+.event-countdown{width:min(100%,360px);margin:0 auto clamp(6px,1svh,10px);text-align:center}
+.event-countdown-label{color:var(--gold);font:700 10px/1.3 Georgia,"Times New Roman",serif;letter-spacing:.18em;text-transform:uppercase}
+
+/* Hide each item before the scroll animation starts */
+#countdown-section .event-countdown-label,
+#countdown-section #countdown,
+#countdown-section ~ h3,
+#countdown-section ~ .room-divider,
+#countdown-section ~ .room-info {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Reveal items one by one after scrolling */
+#countdown-section.countdown-visible .event-countdown-label {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 0s;
+}
+
+#countdown-section.countdown-visible #countdown {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 0.5s;
+}
+
+#countdown-section.countdown-visible ~ h3 {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 1s;
+}
+
+#countdown-section.countdown-visible ~ h3 ~ .room-info {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 1.3s;
+}
+
+
+#countdown-section.countdown-visible ~ .room-divider {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 1.4s;
+}
+
+#countdown-section.countdown-visible ~ .room-info {
+  animation: countdownReveal 0.7s ease forwards;
+  animation-delay: 1.8s;
+}
+
+
+/* Gift Guide and Safety Reminders */
+.reveal-gift,
+.reveal-safety {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.reveal-gift.reveal-visible,
+.reveal-safety.reveal-visible {
+  animation: countdownReveal 0.7s ease forwards;
+}
+
+@keyframes countdownReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-countdown .countdown{gap:clamp(4px,1.2vw,8px);width:100%;margin:6px auto 0;font-size:clamp(16px,4vw,22px)}
+.event-countdown .countdown span{padding:4px 2px;border-top:1px solid rgba(196,154,90,.55);border-bottom:1px solid rgba(196,154,90,.55);background:rgba(255,243,228,.22)}
+.event-countdown .countdown small{margin-top:2px;font-size:8px}
+.room-info strong,.rsvp-panel strong{color:var(--deep-rose);font-weight:700}
+
+.venue-map-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid rgba(196, 154, 90, 0.85);
+  border-radius: 20px;
+  background: rgba(255, 244, 232, 0.8);
+  color: var(--deep-rose);
+  text-decoration: none;
+  line-height: 1.4;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.venue-map-link::after {
+  content: "↗";
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  font-size: 0.9em;
+}
+
+.venue-map-link:active {
+  background: #f3d7d8;
+  transform: scale(0.98);
+}
+
+.venue-map-link:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 3px;
+}
+
+.scroll-hint,.gallery-scroll-hint{position:absolute;left:8%;right:8%;bottom:clamp(30px,6svh,84px);margin:0;color:#966348;font:700 clamp(9px,2.3vw,12px)/1.5 Arial,sans-serif;letter-spacing:.15em;text-align:center}
+.countdown{display:flex;justify-content:center;align-items:stretch;gap:clamp(6px,2vw,16px);width:min(100%,440px);margin:clamp(24px,5svh,46px) auto 10px;color:#884e5a;font:700 clamp(22px,6vw,37px)/1.1 Georgia,"Times New Roman",serif}
+.countdown span{display:grid;align-content:center;min-width:0;flex:1;padding:12px 5px 10px;border:0;border-top:1px solid var(--champagne);border-bottom:1px solid var(--champagne);border-radius:0;background:rgba(255,243,228,.42);color:var(--deep-rose)}
+.countdown small{display:block;margin-top:7px;color:var(--muted);font:10px/1.2 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.room-action{display:inline-flex;align-items:center;justify-content:center;min-height:48px;margin-top:20px;padding:12px 24px;border:1px solid #d6b36f;border-radius:999px;background:linear-gradient(140deg,#c67a7f,#9e5361);color:#fff8eb;text-decoration:none;font:700 14px/1.2 Arial,sans-serif;letter-spacing:.04em;box-shadow:0 6px 16px rgba(87,47,39,.2)}
+.room-action:hover{background:linear-gradient(140deg,#d18b8b,#a85b68)}
+.rsvp-panel p{max-width:24em;margin:2px auto 10px}
+.rsvp-panel{width:var(--poster-width);height:auto;min-height:100svh;max-height:none;aspect-ratio:auto;justify-content:flex-start;overflow:visible;padding:clamp(154px,calc(4svh + 130px),170px) clamp(16px,4vw,40px);background-size:cover}
+.rsvp-panel .room-icon{width:clamp(40px,10vw,50px);margin-bottom:8px;font-size:clamp(22px,5.5vw,28px)}
+.rsvp-panel h3{font-size:clamp(28px,6vw,40px)}
+.rsvp-panel p{font:clamp(14px,3.8vw,17px)/1.38 "Times New Roman",Georgia,serif}
+.rsvp-form-frame{box-sizing:border-box;width:min(100%,290px);max-width:100%;min-width:0;padding:7px;border:1px solid rgba(196,154,90,.78);border-radius:14px;background:linear-gradient(145deg,rgba(255,249,239,.96),rgba(248,229,218,.94));box-shadow:0 6px 22px rgba(42,25,21,.16),inset 0 0 0 3px rgba(196,154,90,.14)}
+.rsvp-form-embed{display:block;width:100%;max-width:100%;min-width:0;height:300px;margin:0;border:0;border-radius:8px;background:#fffaf4}
+.rsvp-panel .footer{position:relative;top:10px;font-size:clamp(14px,3.8vw,17px)}
+.final-room{--scene-wash:rgba(206,157,165,.12)}
+.final-room:after{background:linear-gradient(130deg,rgba(108,55,63,.28),rgba(255,231,217,.12),rgba(108,55,63,.28))}
+
+/* Gallery: overlapping photo carousel */
+.gallery-showcase{padding-top:calc(clamp(140px,24svh,470px) - 100px);padding-bottom:clamp(86px,11svh,190px)}
+.gallery-heading{position:relative;z-index:2;width:100%;text-align:center;color:var(--deep-rose)}
+.gallery-camera,.gallery-heading h3,.gallery-subtitle,.gallery-divider{position:relative;top:-60px}
+.gallery-camera{display:block;width:clamp(40px,6vw,68px);height:auto;margin:0 auto 3px}
+.gallery-heading h3{font-style:italic;font-weight:600;font-size:clamp(24px,5.4vw,42px);color:#994c5c;line-height:1.05;white-space:nowrap}
+.gallery-subtitle{max-width:32em;margin:5px auto 0;color:#714a3c;font:italic clamp(11px,2.6vw,15px)/1.4 Georgia,"Times New Roman",serif;white-space:nowrap}
+.gallery-divider{width:58%;height:12px;margin:6px auto 0;border-top:1px solid var(--gold)}
+.gallery-divider:before{content:"\2665";position:absolute;left:50%;top:-10px;transform:translateX(-50%);padding:0 9px;background:var(--parchment);color:var(--rose);font:18px/1 Georgia,serif}
+.gallery-overlap-carousel{position:relative;z-index:2;width:100%;margin:-42px auto 0;touch-action:pan-y;user-select:none}
+.gallery-overlap-stage{position:relative;height:clamp(200px,34svh,360px);overflow:visible;cursor:grab;outline:none}
+.gallery-overlap-stage.is-dragging{cursor:grabbing}
+.gallery-overlap-card{position:absolute;left:50%;top:50%;width:min(64vw,330px);aspect-ratio:1.3;margin:0;padding:clamp(4px,.8vw,8px);border:1px solid #bd8a47;border-radius:clamp(10px,1.8vw,16px);background:linear-gradient(145deg,#fff9f2,#f8ddd9);box-shadow:0 8px 22px rgba(115,65,37,.24),inset 0 0 0 1px rgba(246,217,163,.85);overflow:hidden;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.78);transition:transform .42s cubic-bezier(.22,.61,.36,1),opacity .35s ease,box-shadow .35s ease;appearance:none}
+.gallery-overlap-card:before{content:"";position:absolute;inset:5px;z-index:2;border:1px solid rgba(193,137,81,.62);border-radius:7px;pointer-events:none}
+.gallery-overlap-card img{position:relative;z-index:1;display:block;width:100%;height:100%;border-radius:5px;object-fit:cover}
+.gallery-overlap-card .gallery-placeholder{position:absolute;z-index:1;inset:7px;display:none;align-items:center;justify-content:center;padding:8px;border-radius:5px;background:#f9e5df;color:#8e6257;text-align:center;font:clamp(10px,2.2vw,14px)/1.3 Georgia,serif;overflow-wrap:anywhere}
+.gallery-overlap-card.is-front{z-index:3;opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);box-shadow:0 13px 30px rgba(95,48,38,.38),0 0 0 4px rgba(255,246,225,.48),inset 0 0 0 1px rgba(246,217,163,.95)}
+.gallery-overlap-card.is-previous{z-index:1;opacity:.72;pointer-events:auto;transform:translate(-84%,-48%) scale(.79)}
+.gallery-overlap-card.is-next{z-index:1;opacity:.72;pointer-events:auto;transform:translate(-16%,-48%) scale(.79)}
+.gallery-photo-heart{position:absolute;z-index:3;top:-13px;left:50%;display:grid;place-items:center;width:clamp(21px,3.3vw,30px);aspect-ratio:1;transform:translateX(-50%);border:1px solid #bc843f;border-radius:50%;background:#fff4e8;color:#c85f71;font:clamp(15px,2.6vw,20px)/1 Georgia,serif;pointer-events:none}
+.gallery-overlap-controls{display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,24px);margin:-6px auto 0}
+.gallery-carousel-arrow{display:grid;place-items:center;width:clamp(30px,6vw,42px);aspect-ratio:1;padding:0;border:1px solid rgba(184,132,63,.85);border-radius:50%;background:linear-gradient(145deg,#fff9ed,#efd1be);color:#9e5361;font:700 clamp(20px,4vw,28px)/1 Georgia,serif;box-shadow:0 4px 12px rgba(91,49,35,.18);cursor:pointer}
+.gallery-carousel-arrow:hover,.gallery-carousel-arrow:focus-visible{background:linear-gradient(145deg,#fffdf5,#e9b9ba);outline:2px solid #c68f55;outline-offset:3px}
+.gallery-carousel-dots{display:flex;align-items:center;justify-content:center;gap:7px}
+.gallery-carousel-dot{width:8px;height:8px;margin:0;padding:0;border:1px solid #bd8a47;border-radius:50%;background:rgba(255,246,229,.82);cursor:pointer;transition:transform .25s ease,background .25s ease}
+.gallery-carousel-dot[aria-current="true"]{background:#c85f71;transform:scale(1.35)}
+.gallery-scroll-hint{bottom:clamp(68px,9svh,150px);color:#a8505e}
+@media(max-width:480px){
+  :root{--cover-castle-position:50% 48%;--cover-gate-left-scale-x:.4;--cover-gate-right-scale-x:.4;--cover-copy-top:68%;--cover-copy-width:58%;--cover-copy-backdrop:rgba(34,27,39,.35);--cover-title-size:clamp(25px,7vw,32px)}
+  .envelope-wrap{padding:20px 14px}
+  .open-btn{padding-inline:12px;font-size:14px}
+  .scene-stage{padding-right:7%;padding-left:7%}
+  .room-info{font-size:14px}
+  .room-card .lead,.rsvp-panel p{font-size:14px}
+  .countdown{gap:5px}
+  .countdown span{padding:10px 3px}
+  .countdown small{font-size:9px}
+  .gallery-overlap-stage{height:clamp(190px,32svh,270px)}
+  .gallery-overlap-card{width:min(68vw,280px)}
+}
+@media(min-width:600px){
+  .scene{padding:0}
+  .scene-stage{box-shadow:0 18px 54px rgba(42,25,21,.36)}
+  .invite-copy{left:12%;right:12%}
+}
+@media(min-width:900px){
+  :root{--cover-castle-position:50% 49%;--cover-copy-top:70%;--cover-copy-width:min(620px,62%)}
+}
+@media(min-aspect-ratio:3/4){
+  .cover:before{background:linear-gradient(180deg,rgba(24,24,39,.3),rgba(23,21,31,.62)),url("castle-outside.webp") center/cover no-repeat;filter:blur(18px) saturate(.72) brightness(.62);transform:scale(1.05)}
+  .cover-castle-art{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%)}
+}
+@media(min-width:900px){
+  .ceremony-reception-card h3{font-size:clamp(21px,3vw,32px);line-height:1.08}
+  .gift-safety-card h3{font-size:clamp(21px,3vw,34px);line-height:1.08}
+  .rsvp-panel h3{font-size:clamp(28px,4vw,40px)}
+  .ceremony-reception-card .room-info{font-size:17px}
+  .gift-safety-card .room-info{font-size:16px}
+  .ceremony-reception-card .room-info,.gift-safety-card .room-info{width:calc(100% + 64px);max-width:none;margin-left:-32px;margin-right:-32px}
+}
+@media(max-width:480px){
+  .ceremony-reception-card .room-info{font-size:14px;line-height:1.4}
+  .gift-safety-card .room-info{font-size:14px;line-height:1.4}
+  .gift-safety-card .gift-guide-copy{font-size:13px;line-height:1.35}
+  .rsvp-panel .footer{font-size:14px}
+}
+@media(max-height:720px){
+  .scene-stage{padding-top:clamp(64px,9svh,100px);padding-bottom:70px}
+  .gallery-overlap-carousel{margin-top:-50px}
+  .gallery-scroll-hint{bottom:clamp(42px,7svh,60px)}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cover,.details.scene-crossfade-in,.cover-castle-art,.castle-gate-left,.castle-gate-right,.cover-gate-stage,.closed-gate-overlay,.envelope-wrap{transition-duration:.01ms}.zoom-glitter i{animation:none!important}}
+/* Bottom-left flower */
+.corner-flower-left {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 150%;
+  height: auto;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Bottom-right flower */
+.corner-flower-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 150%;
+  height: auto;
+  transform: scaleX(-1);
+  z-index: 5;
+  pointer-events: none;
+}
+
+@keyframes flowerZoomOut {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(39vh);
+  }
+}
+
+@keyframes flowerZoomOutRight {
+  from {
+    transform: translateY(0px) scaleX(-1);
+  }
+  to {
+    transform: translateY(39vh) scaleX(-1);
+  }
+}
+
+.corner-flower-left {
+  animation: flowerZoomOut 1.5s ease-out 0s both;
+}
+
+.corner-flower-right {
+  animation: flowerZoomOutRight 1.5s ease-out 0s both;
+}
+
+/* Vintage fairytale route beside venue details */
+.ceremony-reception-card {
+  position: relative;
+}
+
+.fairytale-route {
+  position: absolute;
+  z-index: 0;
+  left: 7%;
+  top: 46.5%;
+  width: 18%;
+  height: 26%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.fairytale-route.route-visible {
+  opacity: 1;
+}
+
+.route-carriage {
+  filter: drop-shadow(0 2px 2px rgba(104, 75, 63, 0.25));
+  opacity: 1;
+}
+
+.route-line {
+  fill: none;
+  stroke: #c49a5a;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 2 10;
+  opacity: 0.6;
+}
+
+.route-checkpoint {
+  fill: #fff4e8;
+  stroke: #b96070;
+  stroke-width: 4;
+}
+
+/* Keep event details above the decorative route */
+.ceremony-reception-card > :not(.fairytale-route) {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <audio id="gateOpeningSound" src="gate-opening.mp3" preload="auto"></audio>
+
+  <audio
+  id="backgroundMusic"
+  src="fairy-tale-music.mp3"
+  loop
+  preload="auto">
+</audio>
+
+<!-- ================= COVER ================= -->
+<section id="cover" class="screen cover">
+  <div class="cover-scene">
+    <img class="cover-castle-art" src="castle-outside.webp" alt="" aria-hidden="true" fetchpriority="high" decoding="async">
+    <div class="cover-gate-stage" aria-hidden="true">
+      <img class="castle-gate-left" src="castle-gate-leaf.webp" alt="" fetchpriority="high" decoding="async">
+      <img class="castle-gate-right" src="castle-gate-right.webp" alt="" fetchpriority="high" decoding="async">
+    </div>
+    <img class="closed-gate-overlay" src="castle-gate-closed.png" alt="" aria-hidden="true" fetchpriority="high" decoding="async">
+    <div class="zoom-glitter" aria-hidden="true"><i>✦</i><i>✧</i><i>✦</i><i>✧</i><i>✦</i><i>✧</i><i>✦</i><i>✧</i></div>
+    <div class="sparkle s1">✦</div>
+    <div class="sparkle s2">♡</div>
+    <div class="sparkle s3">✧</div>
+    <div class="sparkle s4">♡</div>
+
+    <div class="envelope-wrap">
+
+    <div class="envelope">
+      <div class="seal">♡</div>
+    </div>
+
+    <div class="cover-title">
+      <h1>You’re Invited</h1>
+    </div>
+
+    <button class="open-btn" onclick="openInvitation()">
+      Enter the Castle ♡
+    </button>
+    <p class="cover-instruction">Tap to open the gates</p>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= INVITATION ================= -->
+<section id="details" class="details hidden">
+
+  
+
+<section class="castle-screen intro-scene scene">
+  <div class="castle-scene" id="castleScene">
+    <img class="castle-background" src="2nd pg bg.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high">
+    <img class="castle-panel-art" src="2nd pg panel-overlay.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async">
+    <img class="castle-curtain left-curtain" src="curtain-corner.png" alt="" aria-hidden="true" loading="lazy">
+    <img class="castle-curtain right-curtain" src="curtain-corner.png" alt="" aria-hidden="true" loading="lazy">
+    <img class="corner-flowers left-corner-flowers" src="flower-corner.png" alt="" aria-hidden="true" loading="lazy">
+    <img class="corner-flowers right-corner-flowers" src="flower-corner.png" alt="" aria-hidden="true" loading="lazy">
+    <div class="invitation-content">
+      <div class="invite-copy">
+        <p class="invite-message">Please join us as we celebrate<br>the christening of our little one</p>
+        <h2 class="invite-name">Hanani Avielle</h2>
+      </div>
+      <div class="invite-photo-frame" aria-label="Portrait of Hanani Avielle">
+        <img class="invite-portrait" src="first picture.png" alt="Hanani Avielle" loading="lazy" onerror="this.style.display='none'">
+        <img class="invite-photo-frame-art" src="picture-frame-overlay.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async">
+      </div>
+      <p class="invite-blessing">A little blessing, a lot of love.</p>
+      <img
+  class="corner-flower-left"
+  src="a_clean_decorative_floral_corner_illustration_on_a.png"
+  alt=""
+  aria-hidden="true"
+>
+
+<img
+  class="corner-flower-right"
+  src="a_clean_decorative_floral_corner_illustration_on_a.png"
+  alt=""
+  aria-hidden="true"
+>
+      <div class="invite-photo-placeholder">Add baby-photo.jpg</div>
+      </div>
+    </div>
+    <div class="scroll-hint intro-scroll-hint">SCROLL TO EXPLORE &#8595;</div>
+  </div>
+</section>
+<section id="gallery" class="room-section gallery-section scene">
+  <div class="gallery-showcase scene-stage">
+    <div class="gallery-heading">
+      <svg class="gallery-camera" aria-hidden="true" viewBox="0 0 64 48"><path d="M9 15h11l4-6h16l4 6h11a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4Z" fill="#f5d5d2" stroke="#b77d42" stroke-width="2.5"/><circle cx="32" cy="28" r="10" fill="#fff7ec" stroke="#bd7e3f" stroke-width="3"/><circle cx="32" cy="28" r="5" fill="#df8d98"/><path d="M46 21h5" stroke="#bd7e3f" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <h3>Photo Gallery</h3>
+      <p class="gallery-subtitle">A few sweet moments of Hanani Avielle.</p>
+      <div class="gallery-divider" aria-hidden="true"></div>
+    </div>
+    <div class="gallery-overlap-carousel" aria-label="Hanani Avielle photo carousel">
+      <div class="gallery-overlap-stage" id="galleryOverlapStage" tabindex="0" aria-label="Swipe or use arrow keys to change photo">
+        <div id="galleryOverlapCards"></div>
+      </div>
+      <div class="gallery-overlap-controls">
+        <button class="gallery-carousel-arrow" id="galleryOverlapPrevious" type="button" aria-label="Show previous photo">&#8249;</button>
+        <div class="gallery-carousel-dots" id="galleryOverlapDots" aria-label="Choose a gallery photo"></div>
+        <button class="gallery-carousel-arrow" id="galleryOverlapNext" type="button" aria-label="Show next photo">&#8250;</button>
+      </div>
+    </div>
+    <div class="gallery-scroll-hint">SCROLL FOR THE COUNTDOWN &#8595;</div>
+  </div>
+</section>
+
+  <section id="ceremony" class="room-section scene">
+    <div class="room-card scene-stage ceremony-reception-card">
+   
+      <!-- Decorative vintage route -->
+
+<svg class="fairytale-route"
+     viewBox="0 0 100 400"
+     preserveAspectRatio="none"
+     aria-hidden="true">
+
+  <path class="route-line"
+        d="M50 5 C5 45 95 75 50 120
+           S5 195 50 235 S95 320 50 M395"/>
+
+   <!-- <circle class="route-checkpoint" cx="50" cy="4" r="7"/>
+  <circle class="route-checkpoint" cx="55" cy="239" r="7"/>-->
+
+  <g class="route-carriage">
+    <animateMotion
+  dur="20s"
+  begin="0s"
+  repeatCount="indefinite"
+  rotate="auto"
+  calcMode="paced"
+  path="M50 5 C5 45 95 75 50 120 S5 195 50 235 S95 320 50 M395"/>
+
+    <!-- Princess carriage roof -->
+    <path d="M-12 -5 Q-10 -17 0 -17 Q10 -17 12 -5 Z"
+          fill="#f3d7d8" stroke="#a97739" stroke-width="2"/>
+
+    <!-- Crown -->
+    <path d="M-6 -17 L-8 -23 L-2 -20 L0 -26 L3 -20 L8 -23 L6 -17 Z"
+          fill="#c49a5a" stroke="#874957" stroke-width="1"/>
+
+    <!-- Carriage body -->
+    <path d="M-15 -5 L15 -5 L12 7 L-12 7 Z"
+          fill="#c49a5a" stroke="#874957" stroke-width="2"/>
+
+    <!-- Door -->
+    <path d="M-5 -3 L5 -3 L5 5 L-5 5 Z"
+          fill="#fff4e8" stroke="#874957" stroke-width="1.2"/>
+
+    <!-- Wheels -->
+    <circle cx="-9" cy="10" r="4" fill="#fff4e8" stroke="#874957" stroke-width="2"/>
+    <circle cx="9" cy="10" r="4" fill="#fff4e8" stroke="#874957" stroke-width="2"/>
+  </g>
+</svg>
+
+      <div id="countdown-section" class="event-countdown">
+        <div class="event-countdown-label">Countdown</div>
+        <div id="countdown" class="countdown" aria-live="polite">Loading countdown…</div>
+      </div>
+      <h3 class="reveal-ceremony">Christening Ceremony</h3>
+<div class="room-divider reveal-divider"></div>
+<div class="room-info reveal-details"><strong>Sunday, November 29, 2026</strong><br>10:00 AM<br><strong><a class="venue-map-link" href="https://www.google.com/maps/search/?api=1&amp;query=St.%20Joseph%20the%20Worker%20Parish%20Church%2C%20St.%20Francis%20Subdivision%2C%20Pandayan%2C%20Meycauayan%20City%2C%20Bulacan" target="_blank" rel="noopener noreferrer" aria-label="Open St. Joseph the Worker Parish Church in Google Maps">St. Joseph the Worker Parish Church</a></strong><br>St. Francis Subdivision,<br> Pandayan, Meycauayan City, Bulacan</div>
+      <div class="room-divider"></div>
+      <h3 id="reception">Reception</h3>
+      <div class="room-info">12:00 PM<br><strong><a class="venue-map-link" href="https://www.google.com/maps/search/?api=1&amp;query=9%20Mockingbird%2C%20Meycauayan%2C%20Bulacan" target="_blank" rel="noopener noreferrer" aria-label="Open reception location in Google Maps">9 Mockingbird st. Pandayan,</a></strong><br> Meycauayan City, Bulacan</div>
+      <div class="room-divider"></div>
+      <h3 id="attire">Dress Code</h3>
+      <div class="room-info">You may wear any casual clothes with a<br>touch of pastel colors.</div>
+    </div>
+  </section>
+
+  <section id="gifts" class="room-section scene">
+    <div class="room-card scene-stage gift-safety-card">
+      <svg class="gift-guide-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 19h34v23H7V19Zm-2-7h38v8H5v-8Zm19 0v30m0-30c-7 0-11-1-11-5 0-2 2-3 4-3 4 0 7 5 7 8Zm0 0c7 0 11-1 11-5 0-2-2-3-4-3-4 0-7 5-7 8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3 class="reveal-gift">Gift Guide</h3>
+
+      <div class="room-info reveal-gift">With all that we have, we've been truly blessed.<br>Your prayers and presence are the most precious thing<br>you can give.<br><br>But if you desire to give nonetheless,<br>anything is appreciated. ♡</div>
+      <div class="room-divider"></div>
+      <div class="room-icon">♡</div>
+      <h3 class="reveal-safety">Safety Reminders</h3>
+<div class="room-info reveal-safety">No smoking or vaping<br>Always sanitize your hands<br>No kissing Avielle</div>
+      <div class="scroll-hint">SCROLL TO RSVP ↓</div>
+    </div>
+  </section>
+
+  <section id="rsvp" class="room-section scene final-room">
+    <div class="rsvp-panel scene-stage">
+      <h3>RSVP</h3>
+      <p>Please confirm your attendance by filling out<br>our RSVP form.<br><strong>Please RSVP by November 15, 2026.</strong></p>
+      <div class="rsvp-form-frame"><iframe class="rsvp-form-embed" title="RSVP form" src="https://docs.google.com/forms/d/e/1FAIpQLSeCf3qKGqPZFXGcZQ_WqbpAmgb4EZdxGRiFcfhZ0Cv97-QjgQ/viewform?embedded=true" loading="lazy"></iframe></div>
+      <div class="footer">We can't wait to celebrate this<br>special day with you!</div>
+    </div>
+  </section>
+
+</section>
+
+
+<script>
+function updateCountdown(){
+  const target = new Date('2026-11-29T10:00:00+08:00').getTime();
+  const now = Date.now();
+  const output = document.getElementById('countdown');
+  const remaining = target - now;
+  if (remaining <= 0) { output.textContent = 'The celebration day is here!'; return; }
+  const days = Math.floor(remaining / 86400000);
+  const hours = Math.floor((remaining % 86400000) / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+  output.innerHTML = '<span>' + days + '<small>Days</small></span><span>' + hours + '<small>Hours</small></span><span>' + minutes + '<small>Minutes</small></span><span>' + seconds + '<small>Seconds</small></span>';
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+async function openInvitation(){
+  const details = document.getElementById("details");
+  const cover = document.getElementById("cover");
+  const coverScene = document.querySelector(".cover-scene");
+  const castleBackground = document.querySelector(".castle-background");
+  if (coverScene?.classList.contains("gates-opening")) return;
+  if (coverScene) coverScene.classList.add("gates-opening");
+  const gateSound = document.getElementById("gateOpeningSound");
+
+if (gateSound) {
+  gateSound.currentTime = 0;
+  gateSound.volume = 0.55;
+  gateSound.play().catch(error => {
+    console.log("Gate sound could not play:", error);
+  });
+}
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const gateAnimation = new Promise(resolve => setTimeout(resolve, reducedMotion ? 0 : 900));
+  const backgroundReady = castleBackground ? castleBackground.decode().catch(() => {}) : Promise.resolve();
+  await Promise.all([gateAnimation, backgroundReady]);
+if (!reducedMotion && coverScene) {
+  coverScene.classList.add("castle-zooming");
+  await new Promise(resolve => setTimeout(resolve, 300));
+ }
+  details.classList.remove("hidden");
+  details.classList.add("scene-crossfade-in");
+  void details.offsetWidth;
+  requestAnimationFrame(() => {
+    details.classList.add("scene-crossfade-visible");
+    cover.classList.add("scene-crossfade-out");
+  });
+  await new Promise(resolve => setTimeout(resolve, reducedMotion ? 0 : 1200));
+  cover.classList.add("hidden");
+  details.classList.remove("scene-crossfade-in", "scene-crossfade-visible");
+
+  // Start fairy-tale background music after Page 2 appears
+  const backgroundMusic = document.getElementById("backgroundMusic");
+
+  if (backgroundMusic) {
+    backgroundMusic.volume = 0.35;
+    backgroundMusic.play().catch(error => {
+      console.log("Background music could not play:", error);
+    });
+  }
+  
+  window.scrollTo(0, 0);
+}
+
+// PHOTO GALLERY: add, remove, or reorder filenames here.
+const galleryPhotoFiles = [
+  "gallery-1.png",
+  "gallery-2.png",
+  "gallery-3.png",
+  "gallery-4.png",
+  "gallery-5.png",
+  "gallery-6.png",
+  "gallery-7.png",
+  "gallery-8.png",
+  "gallery-9.png",
+  "gallery-10.png"
+
+  
+];
+
+(() => {
+  const stage = document.getElementById("galleryOverlapStage");
+  const cardsWrap = document.getElementById("galleryOverlapCards");
+  const dotsWrap = document.getElementById("galleryOverlapDots");
+  const previous = document.getElementById("galleryOverlapPrevious");
+  const next = document.getElementById("galleryOverlapNext");
+  if (!stage || !cardsWrap || !dotsWrap || !galleryPhotoFiles.length) return;
+
+  let activeIndex = 0;
+  let startX = 0;
+  let dragging = false;
+  let hasSwiped = false;
+  const cards = [];
+  const dots = [];
+  const wrap = (index) => (index + galleryPhotoFiles.length) % galleryPhotoFiles.length;
+
+  const render = () => {
+    cards.forEach((card, index) => {
+      const isFront = index === activeIndex;
+      const isPrevious = index === wrap(activeIndex - 1);
+      const isNext = index === wrap(activeIndex + 1);
+      card.classList.toggle("is-front", isFront);
+      card.classList.toggle("is-previous", !isFront && isPrevious);
+      card.classList.toggle("is-next", !isFront && isNext);
+      card.tabIndex = isFront ? 0 : -1;
+    });
+    dots.forEach((dot, index) => dot.setAttribute("aria-current", String(index === activeIndex)));
+  };
+
+  const goTo = (index) => {
+    activeIndex = wrap(index);
+    render();
+  };
+
+  galleryPhotoFiles.forEach((filename, index) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-overlap-card";
+    card.setAttribute("aria-label", `Show photo ${index + 1}`);
+
+    const heart = document.createElement("span");
+    heart.className = "gallery-photo-heart";
+    heart.setAttribute("aria-hidden", "true");
+    heart.textContent = "♡";
+
+    const image = document.createElement("img");
+    image.src = filename;
+    image.alt = `Hanani Avielle photo ${index + 1}`;
+    image.loading = index === 0 ? "eager" : "lazy";
+
+    const placeholder = document.createElement("span");
+    placeholder.className = "gallery-placeholder";
+    placeholder.textContent = `Add ${filename}`;
+    image.addEventListener("error", () => {
+      image.style.display = "none";
+      placeholder.style.display = "flex";
+    });
+
+    card.append(heart, image, placeholder);
+    card.addEventListener("click", () => {
+      if (!hasSwiped) goTo(index);
+    });
+    cardsWrap.append(card);
+    cards.push(card);
+
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "gallery-carousel-dot";
+    dot.setAttribute("aria-label", `Show photo ${index + 1}`);
+    dot.addEventListener("click", () => goTo(index));
+    dotsWrap.append(dot);
+    dots.push(dot);
+  });
+
+  previous.addEventListener("click", () => goTo(activeIndex - 1));
+  next.addEventListener("click", () => goTo(activeIndex + 1));
+
+  stage.addEventListener("pointerdown", (event) => {
+    startX = event.clientX;
+    dragging = true;
+    hasSwiped = false;
+    stage.classList.add("is-dragging");
+    stage.setPointerCapture?.(event.pointerId);
+  });
+  const finishSwipe = (event) => {
+    if (!dragging) return;
+    const distance = event.clientX - startX;
+    if (Math.abs(distance) > 32) {
+      hasSwiped = true;
+      goTo(activeIndex + (distance < 0 ? 1 : -1));
+      setTimeout(() => { hasSwiped = false; }, 0);
+    }
+    dragging = false;
+    stage.classList.remove("is-dragging");
+  };
+  stage.addEventListener("pointerup", finishSwipe);
+  stage.addEventListener("pointercancel", finishSwipe);
+  stage.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") { event.preventDefault(); goTo(activeIndex - 1); }
+    if (event.key === "ArrowRight") { event.preventDefault(); goTo(activeIndex + 1); }
+  });
+
+  render();
+})();
+
+
+/* Reveal the route and start the carriage after the text */
+const ceremony = document.getElementById("ceremony");
+const route = document.querySelector(".fairytale-route");
+const carriageMotion = document.querySelector(
+  ".fairytale-route .route-carriage animateMotion"
+);
+
+if (ceremony && route && carriageMotion) {
+  const routeObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      routeObserver.unobserve(ceremony);
+
+      // Wait for the text reveal sequence to finish
+      setTimeout(() => {
+        route.classList.add("route-visible");
+        carriageMotion.beginElement();
+      }, 3000);
+    }
+  }, {
+    rootMargin: "100px 0px"
+  });
+
+  routeObserver.observe(ceremony);
+}
+
+
+const countdownSection = document.getElementById("countdown-section");
+
+if (countdownSection) {
+  const countdownObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        countdownSection.classList.add("countdown-visible");
+        countdownObserver.unobserve(countdownSection);
+      }
+    });
+  }, {
+    threshold: 0.3
+  });
+
+  countdownObserver.observe(countdownSection);
+}
+
+
+document.querySelectorAll('.reveal-gift, .reveal-safety').forEach((element, index) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        element.classList.add('reveal-visible');
+        observer.unobserve(element);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  observer.observe(element);
+});
+
+</script>
+
+</body>
+</html>
